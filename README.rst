@@ -3,7 +3,9 @@ pycarta
 =======
 
 
-Add a short description here!
+PyCarta is a tool that pulls data from materials databases, such as AFRL's
+HyperThought, through their respective APIs and allows these data to be
+shaped into graphs to enable data exploration and knowledge generation.
 
 
 Description
