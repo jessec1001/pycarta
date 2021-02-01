@@ -1,3 +1,6 @@
+# Non-package contents
+demo/
+
 # Temporary and binary files
 *~
 *.py[cod]
