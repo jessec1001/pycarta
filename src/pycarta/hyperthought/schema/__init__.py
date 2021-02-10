@@ -11,7 +11,26 @@ class LoadWarning(Warning):
     pass
 
 
-def load(contents, force=False):
+def load(contents, force: bool=False, error: bool=False):
+    """
+    Attempts to load HyperThought formatted data based on all known
+    HyperThought schema.
+
+    Parameters
+    ==========
+    contents : dict
+        Contents to be parsed.
+    force : bool
+        Read all valid data.
+    error : bool
+        Treat warnings as errors. Negates `force`. If False (default), then
+        missing and unknown fields will be read, even if the schema requires
+        them.
+
+    Returns
+    =======
+        HyperThought schema object populated with the data from `contents`.
+    """
     from marshmallow import ValidationError
     import marshmallow as mm
     import warnings
@@ -84,11 +103,15 @@ def load(contents, force=False):
 
     # if we get here, then none of the schemas are a perfect fit.
     best = {v:k for k,v in quality.items()}[max(quality.values())]
-    warnings.warn(f"No valid Hyperthought schema was found. "
-                  f"{best.__name__}, with a similarity score of "
-                  f"{max(quality.values())}, has been adapted "
-                  f"to accept missing and extra values.",
-                  LoadWarning)
+    message = f"No valid Hyperthought schema was found. " \
+              f"{best.__name__}, with a similarity score of " \
+              f"{max(quality.values())}, may be adapted " \
+              f"to accept missing and extra values."
+    if error:
+        raise ValueError(message)
+    else:
+        warnings.warn(message, LoadWarning)
+
     try:
         # try to read the best allowing for missing data, loosing requirements
         # and including extra data not defined in the schema.

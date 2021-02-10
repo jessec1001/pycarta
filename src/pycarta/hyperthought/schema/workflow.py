@@ -23,20 +23,14 @@ WorkflowContent = class_generator(
     completed=fields.DateTime(allow_none=True),
     created=fields.DateTime(),
     creator=fields.Str(),
-    # data_model=fields.Str(allow_none=True, required=False),
-    # data_model_fields=fields.Str(allow_none=True, required=False),
-    # data_model_instance=fields.Str(allow_none=True, required=False),
-    # manager_review=fields.Boolean(allow_none=True, required=False),
     modified=fields.DateTime(allow_none=True),
     modifier=fields.Str(allow_none=True),
     name=fields.Str(),
     notes=fields.Str(allow_none=True),
     parent_process=fields.UUID(allow_none=True),
     pid=fields.UUID(allow_none=True),
-    pk=fields.UUID(),
+    pk=fields.UUID(required=True),
     predecessors=fields.List(fields.UUID(), allow_none=True),
-    # process_files=fields.List(fields.UUID(), allow_none=True, required=False),
-    # process_sub_type=fields.Str(allow_none=True, required=False),
     process_type=fields.Str(
         validate=validate.OneOf([
             "workflow",
@@ -44,12 +38,6 @@ WorkflowContent = class_generator(
             "process"
         ])
     ),
-    # section=fields.Mapping(
-    #     keys=fields.Str(),
-    #     values=fields.Str(allow_none=True),
-    #     allow_none=True,
-    #     required=False
-    # ),
     started=fields.DateTime(allow_none=True),
     status=fields.Str(
         validate=validate.OneOf([
@@ -66,7 +54,6 @@ WorkflowContent = class_generator(
     ),
     successors=fields.List(fields.UUID(), allow_none=True),
     template=fields.Boolean(),
-    # template_files=fields.List(fields.UUID(), allow_none=True, required=False),
     xml=fields.Str(allow_none=True)
 
 )

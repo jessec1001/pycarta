@@ -11,10 +11,12 @@ __all__ = ["FileContent", "File"]
 
 
 FileContent = class_generator(
-    backend=fields.Str(validate=validate.OneOf([
-        "default",
-        "s3"
-    ])),
+    backend=fields.Str(
+        validate=validate.OneOf([
+            "default",
+            "s3"
+        ])
+    ),
     created=fields.DateTime(),
     created_by=fields.Str(),
     file=fields.UUID(allow_none=True),
