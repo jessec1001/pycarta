@@ -29,6 +29,6 @@ class TestLoad:
         raises_error(lambda: ht.schema.load(data), ValueError)
         # required parameter missing
         del data["content"]["pk"]
-        raises_error(lambda: ht.schema.load(data, error=True), ValueError)
+        raises_error(lambda: ht.schema.load(data, strict=True), ValueError)
         # force ignores all invalid data.
         obj = ht.schema.load(data, force=True)

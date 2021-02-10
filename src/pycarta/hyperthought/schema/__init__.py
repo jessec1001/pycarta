@@ -11,7 +11,7 @@ class LoadWarning(Warning):
     pass
 
 
-def load(contents, force: bool=False, error: bool=False):
+def load(contents, force: bool=False, strict: bool=False):
     """
     Attempts to load HyperThought formatted data based on all known
     HyperThought schema.
@@ -22,10 +22,10 @@ def load(contents, force: bool=False, error: bool=False):
         Contents to be parsed.
     force : bool
         Read all valid data.
-    error : bool
-        Treat warnings as errors. Negates `force`. If False (default), then
-        missing and unknown fields will be read, even if the schema requires
-        them.
+    strict : bool
+        If True, then only data that matches a known schema element will be
+        read. If False, the default, then missing and unknown fields will be
+        read, even if the schema requires them.
 
     Returns
     =======
@@ -107,7 +107,7 @@ def load(contents, force: bool=False, error: bool=False):
               f"{best.__name__}, with a similarity score of " \
               f"{max(quality.values())}, may be adapted " \
               f"to accept missing and extra values."
-    if error:
+    if strict:
         raise ValueError(message)
     else:
         warnings.warn(message, LoadWarning)
