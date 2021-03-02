@@ -89,6 +89,6 @@ def build_nx(
     for child in (tqdm(children) if progress else children):
         # this builds the graph through preorder access
         graph.add_edge(parent, child)
-        build_nx(child, graph=graph, key=key)
+        build_nx(child, graph=graph, key=key, progress=False)
     graph.nodes[parent]["label"] = parent.name
     return graph
