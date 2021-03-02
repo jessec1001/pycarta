@@ -21,7 +21,7 @@ class HyperthoughtNode(Node):
         elif isinstance(self.contents, WorkflowTemplate):
             return self.contents["name"]
         else:
-            return super().name
+            return getattr(super(), "name", self.key)
 
     @name.setter
     def name(self, value):
