@@ -105,7 +105,7 @@ def load(contents, force: bool=False, strict: bool=False):
     best = {v:k for k,v in quality.items()}[max(quality.values())]
     message = f"No valid Hyperthought schema was found. " \
               f"{best.__name__}, with a similarity score of " \
-              f"{max(quality.values())}, may be adapted " \
+              f"{max(quality.values()):.3f}, may be adapted " \
               f"to accept missing and extra values."
     if strict:
         raise ValueError(message)
