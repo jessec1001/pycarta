@@ -12,6 +12,7 @@ from ..schema import (File,
 from ..schema import load
 from tqdm.auto import tqdm
 from typing import Union, Callable, Iterable, Mapping, Any
+import asyncio
 import networkx as nx
 
 import logging
@@ -36,14 +37,24 @@ RETURN_TYPE = Union[ \
 ]
 
 
-def build_nx(
+async def build_nx(
         parent: HyperthoughtNode,
         graph: Union[None, nx.DiGraph, nx.Graph]=None,
         *,
-        key: Callable[[HyperthoughtNode], RETURN_TYPE],
-        progress: bool=True):
+        key: Callable[[HyperthoughtNode], RETURN_TYPE]):
     """
-    Builds a networkx graph rooted at the supplied parent node.
+    Builds a networkx graph rooted at the supplied parent node. This
+    function is asynchronous to allow for parallel IO. Therefore,
+    it should always be called as:
+
+        graph = await build_nx(root, key=lambda x: get_children(parent))
+
+    Interacting through the HyperThought API, this is typically:
+
+        graph = await build_nx(
+            root,
+            key=lambda node: workflow_api.get_children(node.key)
+        )
 
     Parameters
     ----------
@@ -64,9 +75,6 @@ def build_nx(
         and returns a list of dictionary-like object. Each dictionary-like
         object are the child contents.
 
-    progress : bool
-        Whether or not to display a progress bar as the graph is being
-        built.
 
     Returns
     -------
@@ -76,19 +84,25 @@ def build_nx(
     Examples
     --------
 
-    >>> project_id = ...
-    >>> workflow_api = ...
-    >>> root = [HyperthoughtNode(contents=experiment)
-                for experiment in workflow_api.get_templates(project_id)][0]
-    >>> graph = build(root, key=lambda n: workflow_api.get_children(n.key))
+        project_id = ...
+        workflow_api = ...
+        roots = [HyperthoughtNode(contents=experiment)
+                for experiment in workflow_api.get_templates(project_id)]
+        graph = await asyncio.gather(*[
+            build_nx(
+                root,
+                key=lambda n: workflow_api.get_children(n.key)
+            )
+            for root in roots
+        ])
     """
-    if graph is None:
-        graph = nx.DiGraph()
-    # get the children
-    children = [HyperthoughtNode(contents=child) for child in key(parent)]
-    for child in (tqdm(children) if progress else children):
-        # this builds the graph through preorder access
-        graph.add_edge(parent, child)
-        build_nx(child, graph=graph, key=key, progress=False)
-    graph.nodes[parent]["label"] = parent.name
+    graph = graph or nx.DiGraph()
+    children = [
+        HyperthoughtNode(contents=load(child, force=True))
+        for child in key(parent)
+    ]
+    graph.add_edges_from([(parent, child) for child in children])
+    result = await asyncio.gather(*[
+        build_nx(child, graph, key=key) for child in children
+    ])
     return graph

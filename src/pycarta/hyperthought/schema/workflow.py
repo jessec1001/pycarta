@@ -81,7 +81,7 @@ WorkflowTemplate = class_generator(
     createdByFullName=fields.Str(),
     createdOn=fields.DateTime(),
     icon=fields.Str(allow_none=True),
-    key=fields.UUID(allow_none=True),
+    key=fields.UUID(),
     lazy=fields.Boolean(allow_none=True),
     modifiedBy=fields.Str(allow_none=True),
     modifiedByFullName=fields.Str(allow_none=True),

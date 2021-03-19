@@ -6,11 +6,12 @@ __all__ = ["Metadata"]
 
 
 Link = class_generator(
+    displayText=fields.Str(allow_none=True),
+    link=fields.Field(allow_none=True),
     type=fields.Str(validate=validate.OneOf([
         "string",
         "link"
-    ])),
-    link=fields.Field(allow_none=True)
+    ]))
 )
 
 
