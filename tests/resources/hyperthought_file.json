@@ -1,0 +1,40 @@
+{
+  "content": {
+    "backend": "default",
+    "created": "2021-02-10T07:47+08:00",
+    "created_by": "Branden Kappes",
+    "file": "97cfbfe2-7469-4cb7-b9b3-504fc703bee9",
+    "ftype": "xlsx",
+    "items": 42,
+    "modified": "2021-02-10T07:50+08:00",
+    "modified_by": "Branden Kappes",
+    "name": "junk_file.xlsx",
+    "path": ",43e0cf84-d6e2-43c1-b044-cedbb0a13996,",
+    "path_string": "path/from/root/",
+    "pk": "f5abfbb8-02cb-4057-8240-7849bf103d34",
+    "size": 1086780
+  },
+  "triples": [],
+  "metadata": [],
+  "permissions": {
+    "projects": {
+      "a381b8ee-1c60-4f39-ba77-f0d52db6f612": "edit"
+    },
+    "users": {},
+    "groups": {}
+  },
+  "restrictions": {
+    "distribution": "Distribution D",
+    "exportControl": "",
+    "securityMarking": ""
+  },
+  "header": {
+    "canonical-uri": "/workflow/process/161f5895-32a2-45cf-ae20-e06419393719",
+    "sys-creation-timestamp": "2020-07-27T19:53:25.913595Z",
+    "sys-last-modified": "2020-07-27T19:53:25.913595Z",
+    "createdBy": "ThieseJM",
+    "modifiedBy": "ThieseJM",
+    "uri": "/workflow/process/161f5895-32a2-45cf-ae20-e06419393719/versions/0",
+    "pid": "ebce2d40-ae83-47e5-bf52-981405179a35"
+  }
+}

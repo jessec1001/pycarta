@@ -63,7 +63,8 @@ def class_generator(**schema):
             schema = Container.schema(**kwds)
             for field in schema.fields.values():
                 if hasattr(field, 'unknown'):
-                    field.unknown = kwds.get('unknown', None)
+                    # field.unknown = kwds.get('unknown', None)
+                    field.unknown = kwds.get('unknown', field.unknown)
             return schema.load(data)
 
         @staticmethod
@@ -81,7 +82,8 @@ def class_generator(**schema):
     def propagate_unknown(self, data, **kwds):
         for field in self.fields.values():
             if hasattr(field, 'unknown'):
-                field.unknown = self.unknown
+                # field.unknown = self.unknown
+                field.unknown = getattr(self, "unknown", field.unknown)
         return data
     def empty_string_to_null(self, data, **kwds):
         return {k:(v or None) for k,v in data.items()}

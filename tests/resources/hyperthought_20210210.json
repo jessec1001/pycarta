@@ -1,0 +1,59 @@
+{
+  "content": {
+    "status": "",
+    "xml": "<mxGraphModel dx=\"1172\" dy=\"584\" grid=\"1\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"1\" pageScale=\"1\" pageWidth=\"850\" pageHeight=\"1100\" background=\"#ffffff\"><root><mxCell id=\"a20c7331-8af9-4e7b-ab85-187544c266a2\"/><mxCell id=\"69ef29f0-55d9-40c8-bb97-9230ef6275ec\" parent=\"a20c7331-8af9-4e7b-ab85-187544c266a2\"/><mxCell id=\"2573e869-a13c-437f-a092-1b3c9ebf4d7d\" value=\"Tensile\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"69ef29f0-55d9-40c8-bb97-9230ef6275ec\"><mxGeometry x=\"60\" y=\"30\" width=\"80\" height=\"80\" as=\"geometry\"/></mxCell></root></mxGraphModel>",
+    "name": "Tensile",
+    "parent_process": "3acc7e6a-25b6-4db9-807d-c6a143995410",
+    "pid": "",
+    "client_id": "98cfa7e9-7b2e-4fc5-92a6-3977b99ec4ff",
+    "successors": [],
+    "process_type": "workflow",
+    "template": true,
+    "children": [
+      "f553df25-e034-4004-abb9-f54f66c006b8"
+    ],
+    "predecessors": [],
+    "assignee": "",
+    "started": "",
+    "completed": "",
+    "notes": "",
+    "template_files": [],
+    "process_files": [],
+    "data_model": "",
+    "data_model_fields": "",
+    "data_model_instance": "",
+    "section": {},
+    "created": "2020-07-27T12:40:40.806493+00:00",
+    "creator": "ThieseJM",
+    "modified": "2020-07-27T19:53:25.913595Z",
+    "modifier": "ThieseJM",
+    "pk": "161f5895-32a2-45cf-ae20-e06419393719"
+  },
+  "hyperthought": {
+    "name": "Workflow",
+    "objectType": "workflow"
+  },
+  "triples": [],
+  "metadata": [],
+  "permissions": {
+    "projects": {
+      "a381b8ee-1c60-4f39-ba77-f0d52db6f612": "edit"
+    },
+    "users": {},
+    "groups": {}
+  },
+  "restrictions": {
+    "distribution": "Distribution D",
+    "exportControl": "",
+    "securityMarking": ""
+  },
+  "headers": {
+    "canonical-uri": "/workflow/process/161f5895-32a2-45cf-ae20-e06419393719",
+    "sys-creation-timestamp": "2020-07-27T19:53:25.913595Z",
+    "sys-last-modified": "2020-07-27T19:53:25.913595Z",
+    "createdBy": "ThieseJM",
+    "modifiedBy": "ThieseJM",
+    "uri": "/workflow/process/161f5895-32a2-45cf-ae20-e06419393719/versions/0",
+    "pid": "ebce2d40-ae83-47e5-bf52-981405179a35"
+  }
+}
