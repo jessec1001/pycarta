@@ -2,4 +2,4 @@
 Contributors
 ============
 
-* Branden Kappes <bkappes@kmmd.io>
+* Branden Kappes <branden.kappes@contextualize.us.com>

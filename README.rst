@@ -3,17 +3,17 @@ pycarta
 =======
 
 
-Add a short description here!
+PyCarta provides a pythonic interface to the Carta data virtualization and
+analysis environment.
 
 
 Description
 ===========
 
-A longer description of your project goes here...
+Carta provides a data virtualization environment that allows many, possibly
+disparate, data resources to be connected to a uniform data processing and
+analysis platform.
 
-
-Note
-====
-
-This project has been set up using PyScaffold 3.3.1. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
+PyCarta provides a pythonic interface to the Carta API, allowing interactive
+development of data analysis pipelines within python and development of Carta
+Operations within python.
