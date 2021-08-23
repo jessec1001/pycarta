@@ -1,0 +1,51 @@
+{
+    "api": {
+        "user": {
+                "id": "e6e25ef3-ed88-4210-a4c5-ea9cf3bb2cd8",
+                "name": "branden.kappes",
+                "email": "branden.kappes@contextualize.us.com",
+                "firstName": "Branden",
+                "lastName": "Kappes",
+                "groups": []
+            },
+        "filtered users": [
+                {
+                    "id": "552e85ab-b6b8-4061-a305-d0046f6f65bd",
+                    "name": "m.miller",
+                    "email": "matthew.miller@contextualize.us.com",
+                    "firstName": "Matthew",
+                    "lastName": "Miller"
+                },
+                {
+                    "id": "61da8b53-6bf8-4a4b-8b41-bf7e4b03df12",
+                    "name": "matt_m",
+                    "email": "matthewm8m@gmail.com",
+                    "firstName": "Matthew",
+                    "lastName": "Miller"
+                },
+                {
+                    "id": "f70e7861-98ac-4703-b05a-03a9e3c75b59",
+                    "name": "michelle",
+                    "email": "michelle.daya@gmail.com",
+                    "firstName": "Michelle",
+                    "lastName": "Daya"
+                },
+                {
+                    "id": "d5cc7b83-d590-4abe-9b17-1f64596e0965",
+                    "name": "michellec",
+                    "email": "michelle.daya@contextualize.us.com",
+                    "firstName": "Michelle",
+                    "lastName": "Daya"
+                }
+            ],
+        "sources": [
+                "Synthetic",
+                "User",
+                "HyperThought"
+            ],
+        "synthetic resources": [
+                "FiniteUndirectedGraph",
+                "InfiniteDirectedGraph"
+            ]
+    }
+}
