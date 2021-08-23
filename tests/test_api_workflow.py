@@ -29,5 +29,4 @@ def test_operations(agent):
         response = get_operations(agent, name=None, verify=False)
         assert response is None
     else:
-        response = get_operations(agent, name=name, verify=False)
-        assert response is not None
+        pass
