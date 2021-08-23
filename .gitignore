@@ -1,3 +1,6 @@
+# Non-package contents
+demo/
+
 # Temporary and binary files
 *~
 *.py[cod]
@@ -33,7 +36,7 @@ tags
 htmlcov/*
 .coverage
 .tox
-junit.xml
+junit*.xml
 coverage.xml
 .pytest_cache/
 
