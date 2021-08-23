@@ -7,12 +7,12 @@ from functools import wraps
 
 def functionlogger(fn):
     function_name = fn.__name__
-    logger = logging.getLogger(name)
+    logger = logging.getLogger(function_name)
     @wraps(fn)
     def wrapper(*args, **kwds):
         state = "Success"
         try:
-            result = fn(*args, **kwargs)
+            result = fn(*args, **kwds)
         except:
             state = "Failed"
             raise

@@ -44,6 +44,9 @@ class Agent(metaclass=MetaLogger):
     def url(self, url: str):
         self._url = url
 
+    def endpoint(self, *path):
+        return os.path.join(self.url, *path)
+
     def _set_auth(self, kwds: dict[str, Any]):
         kwds["cookies"] = {
             **{"CartaAuth": self.__auth},
@@ -53,10 +56,10 @@ class Agent(metaclass=MetaLogger):
 
     def get(self, endpoint, **kwds):
         """
-        Perform a get operation using the default parameters, if
+        Perform a `GET` operation using the default parameters, if
         not specified. This function accepts all parameters valid for
         `requests.get`, but provides defaults for Carta-specific
-        requirements stored by this `Agent`.
+        requirements stored by this Agent.
 
         Parameters
         ----------
@@ -69,9 +72,57 @@ class Agent(metaclass=MetaLogger):
             agent = Agent(url="https://localhost:5001/api")
             response = agent.get("user") # calls GET("https://localhost:5001/api/user")
         """
-        url = self.url.strip("/") + "/" + endpoint
+        url = self.endpoint(endpoint)
         kwds = self._set_auth(kwds)
         return requests.get(url, **kwds)
+
+    def post(self, endpoint, **kwds):
+        """
+        Perform a `POST` operation using the default parameters, if
+        not specified. This function accepts all parameters valid for
+        `requests.post`, but provides defaults for Carta-specific
+        requirements stored by this Agent.
+
+        Parameters
+        ----------
+        endpoint : str
+            Endpoint from the base URL to post.
+        data/json : dict or str
+            Data to be posted. Use `data` if the data is already JSON-encoded.
+            If not, `json` will automatically encode the dict.
+
+        Example
+        -------
+
+            agent = Agent(url="https://localhost:5001/api")
+            package = {"foo": "bar"}
+            response = agent.post("user", data=package)
+        """
+        url = self.endpoint(endpoint)
+        kwds = self._set_auth(kwds)
+        return requests.post(url, **kwds)
+
+    def delete(self, endpoint, **kwds):
+        """
+        Perform a `DELETE` operation using the default parameters, if
+        not specified. This function accepts all parameters valid for
+        `requests.delete`, but provides defaults for Carta-specific
+        requirements stored by this Agent.
+
+        Parameters
+        ----------
+        endpoint : str
+            Endpoint from the base URL to delete.
+
+        Example
+        -------
+
+            agent = Agent(url="https://localhost:5001/api")
+            response = agent.delete("user/0")
+        """
+        url = self.endpoint(endpoint)
+        kwds = self._set_auth(kwds)
+        return requests.delete(url, **kwds)
 
 
 def create_agent(token: str, url: Optional[str]=None):
