@@ -2,7 +2,7 @@ import os
 import requests
 import warnings
 
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 
 from ..base.logger import MetaLogger
 
@@ -47,7 +47,7 @@ class Agent(metaclass=MetaLogger):
     def endpoint(self, *path):
         return os.path.join(self.url, *path)
 
-    def _set_auth(self, kwds: dict[str, Any]):
+    def _set_auth(self, kwds: Dict[str, Any]):
         kwds["cookies"] = {
             **{"CartaAuth": self.__auth},
             **kwds.get("cookies", dict())

@@ -3,7 +3,7 @@ from ..base.logger import functionlogger
 from ..base.typing import JsonType
 from ..graph.node import Node
 from numbers import Number
-from typing import Union, Optional, Any
+from typing import Union, Optional, Any, List, Tuple
 
 import logging
 
@@ -160,7 +160,7 @@ def get_descendants(
     source: str,
     resource: str,
     *,
-    ids: Union[str, list[str]],
+    ids: Union[str, List[str]],
     includeRoots: bool=False,
     depth: Optional[int]=1,
     traversal: str="preorder",
@@ -222,7 +222,7 @@ def get_ids(
     source: str,
     resource: str,
     *,
-    ids: Union[str, list[str]],
+    ids: Union[str, List[str]],
     **kwds
 ):
     """
@@ -267,8 +267,8 @@ def post_graph(
     source: str,
     *,
     label: str,
-    nodes: list[Node]=[],
-    edges: list[tuple[Node, Node]]=[],
+    nodes: List[Node]=[],
+    edges: List[Tuple[Node, Node]]=[],
     directed: bool=True,
     **kwds
 ):
