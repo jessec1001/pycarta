@@ -1,4 +1,6 @@
+import json
 from collections.abc import Hashable
+from pprint import pformat
 from typing import Optional, Union
 from uuid import uuid4
 
@@ -56,12 +58,18 @@ class Node(Hashable):
                 are present, `id` takes precedence.
             values : list
                 List of values for this property.
+            properties : list
+                List of subproperties.
             """
             self._id = kwds.get("id", kwds.get("name"))
             if self._id is None:
                 raise TypeError(f"Node.Property missing 1 required "
                                  "positional parameter: 'id'")
             self.values = Node.ensure_list(kwds.get("values", []))
+            if "properties" in kwds:
+                self.properties = Node.ensure_list(kwds["properties"])
+            else:
+                self.properties = None
 
         @property
         def id(self): return self._id
@@ -74,10 +82,13 @@ class Node(Hashable):
             -------
             dict
             """
-            return {
+            rval = {
                 "id": self.id,
-                "values": self.values
+                "values": [v for v in self.values if v is not None]
             }
+            if self.properties is not None:
+                rval["properties"] = [p.json() for p in self.properties]
+            return rval
 
         @staticmethod
         def from_json(pkg: JsonType):
@@ -95,6 +106,17 @@ class Node(Hashable):
             -------
             Node.Property
             """
+            try:
+                pkg = json.loads(json.dumps(pkg))
+            except:
+                raise ValueError("%s package is not valid JSON.", pformat(pkg))
+            # if "values" in pkg:
+            #     pkg["values"] = [v for v in pkg["values"] if v is not None]
+            if "properties" in pkg:
+                pkg["properties"] = [
+                    Node.Property.from_json(p)
+                    for p in Node.ensure_list(pkg["properties"])
+                ]
             return Node.Property(**pkg)
 
     def __init__(
@@ -154,11 +176,14 @@ class Node(Hashable):
         -------
         Node
         """
+        try:
+            pkg = json.loads(json.dumps(pkg))
+        except:
+            raise ValueError("%s package is not valid JSON.", pformat(pkg))
         if "properties" in pkg:
-            properties = Node.ensure_list(pkg["properties"])
             pkg["properties"] = [
                 Node.Property.from_json(p)
-                for p in properties
+                for p in Node.ensure_list(pkg["properties"])
                 if p is not None
             ]
         return Node(**pkg)

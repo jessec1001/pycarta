@@ -8,6 +8,18 @@ from typing import Union, Optional, Any
 import logging
 
 
+__all__ = [
+    "get_sources",
+    "get_resources",
+    "get_data",
+    "get_roots",
+    "get_descendants",
+    "get_ids",
+    "post_graph",
+    "delete_resource"
+]
+
+
 @functionlogger
 def get_sources(agent: Agent, **kwds) -> JsonType:
     """
@@ -162,7 +174,7 @@ def get_descendants(
     *,
     ids: Union[str, list[str]],
     includeRoots: bool=False,
-    depth: Optional[int]=1,
+    depth: Optional[Union[str, int]]=1,
     traversal: str="preorder",
     **kwds
 ):
@@ -317,7 +329,7 @@ def post_graph(
             if response:
                 print("Graph was posted successfully.")
             else:
-                priint("Graph was not posted.")
+                print("Graph was not posted.")
     """
     logger = logging.getLogger()
     nodeSet = set(nodes)
@@ -353,7 +365,7 @@ def post_graph(
             __name__,
             response.status_code
         )
-        return None
+        return response
 
 
 # ##### DELETE operations ##### #
