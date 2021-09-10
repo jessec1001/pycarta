@@ -1,5 +1,5 @@
 from collections.abc import Hashable
-from typing import Optional, Union
+from typing import Optional, Union, List
 from uuid import uuid4
 
 from ..base.logger import MetaLogger
