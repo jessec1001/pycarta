@@ -7,7 +7,6 @@ from typing import Optional, Any, Dict
 from ..base.logger import MetaLogger
 
 
-
 class Agent(metaclass=MetaLogger):
     """
     Manages the connection to Carta.
