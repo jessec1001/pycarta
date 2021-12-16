@@ -1,0 +1,122 @@
+import json
+import os
+import pytest
+from .common_fixtures import hyperthoughtAuth
+from pycarta.interface.hyperthought import get_auth
+from pycarta.interface.hyperthought import get_children
+from pycarta.interface.hyperthought import get_templates
+from pycarta.interface.hyperthought import get_workspaces
+from pycarta.interface.hyperthought.base import Workspace
+from pycarta.interface.hyperthought.base import Template
+from pycarta.interface.hyperthought.base import HyperThoughtKeyFinder
+
+
+@pytest.fixture
+def hyperthought_base_workspace():
+    with open("expected_output.json") as ifs:
+        data = json.load(ifs)
+    return data["integrations"]["hyperthought"]["base"]["workspace"]
+
+
+@pytest.fixture
+def hyperthought_base_template():
+    with open("expected_output.json") as ifs:
+        data = json.load(ifs)
+    return data["integrations"]["hyperthought"]["base"]["template"]
+
+
+@pytest.fixture
+def hyperthought_base_process():
+    with open("expected_output.json") as ifs:
+        data = json.load(ifs)
+    return data["integrations"]["hyperthought"]["base"]["process"]
+
+
+@pytest.fixture(scope="module")
+def hyperthought_auth():
+    if "HYPERTHOUGHT_AUTH" not in os.environ:
+        print("Set 'export HYPERTHOUGHT_AUTH=[HyperThought auth token]' before testing.")
+        raise ValueError(
+            "Environment variable HYPERTHOUGHT_AUTH must be set to run tests."
+        )
+    return get_auth(os.environ["HYPERTHOUGHT_AUTH"])
+
+
+class TestBase:
+    def test_workspace(self, hyperthought_base_workspace):
+        pkg = hyperthought_base_workspace
+        workspace = Workspace(**pkg)
+        assert workspace.id == pkg["id"]
+        b = [
+            workspace[k] == v
+            for k,v in pkg.items()
+            if not isinstance(v, (list, dict))
+        ]
+        assert all(b), \
+            "Workspace does not contain expected items"
+
+    def test_template(self, hyperthought_base_template):
+        pkg = hyperthought_base_template
+        template = Template(**pkg)
+        assert template.id == pkg["key"]
+        b = [
+            template[k] == v
+            for k,v in pkg.items()
+            if not isinstance(v, (list, dict))
+        ]
+        assert all(b), \
+            "Workspace does not contain expected items"
+
+    def test_hyperthought_key_finder(self, hyperthought_auth):
+        auth = hyperthought_auth
+        key_finder = HyperThoughtKeyFinder(auth)
+        workspace = {
+            "uid": "07b519d0-7a0d-44fd-b985-75610c5db46b",
+            "path": "KappesBR"
+        }
+        template = {
+            "uid": "4cda7abf-d3ca-4126-adc1-02fc329873e6",
+            "path": "KappesBR/Workflow01"
+        }
+        workflow = {
+            "uid": "ce182e59-0912-4a0d-b994-d7da1164653e",
+            "path": "KappesBR/Workflow01/Workflow03"
+        }
+        process = {
+            "uid": "ea44eec1-b3df-4161-a606-02d46bc55e70",
+            "path": "KappesBR/Workflow01/Workflow03/Process04"
+        }
+        for obj in (workspace, template, workflow, process):
+            assert key_finder(obj["uid"]) == obj["uid"]
+            assert key_finder(obj["path"]) == obj["uid"]
+
+
+class TestAccessors:
+    def test_get_children(self, hyperthought_auth, hyperthought_base_process):
+        auth = hyperthought_auth
+        key_finder = HyperThoughtKeyFinder(auth)
+        process = hyperthought_base_process
+        children = get_children(auth, process["content"]["parent_process"])
+        for child in children:
+            if key_finder(child) == key_finder(process):
+                return
+        assert False, "get_children failed"
+
+    def test_get_templates(self, hyperthought_auth, hyperthought_base_workspace, hyperthought_base_template):
+        auth = hyperthought_auth
+        key_finder = HyperThoughtKeyFinder(auth)
+        workspace = hyperthought_base_workspace
+        template = hyperthought_base_template
+        templates = get_templates(auth, key_finder(workspace))
+        for k,v in templates.items():
+            if key_finder(v) == key_finder(template):
+                return
+        assert False, f"Failed to find {template['name']}"
+
+    def test_get_workspaces(self, hyperthought_auth, hyperthought_base_workspace):
+        auth = hyperthought_auth
+        key_finder = HyperThoughtKeyFinder(auth)
+        workspace = hyperthought_base_workspace
+        retrieved = get_workspaces(auth)
+        b = [(key_finder(r) == key_finder(workspace)) for r in retrieved]
+        assert any(b), f"Failed to find {workspace['name']}"

@@ -8,7 +8,7 @@ def cartaAuth():
     if "CARTA_AUTH" not in os.environ:
         print("Set 'export CARTA_AUTH=[Carta auth token]' before testing.")
         raise ValueError(
-            "Envinronment variable CARTA_AUTH must be set to run tests."
+            "Environment variable CARTA_AUTH must be set to run tests."
         )
     return os.environ["CARTA_AUTH"]
 
@@ -24,3 +24,13 @@ def agent(cartaAuth, cartaUrl):
         cartaAuth,
         url=cartaUrl
     )
+
+
+@pytest.fixture
+def hyperthoughtAuth():
+    if "HYPERTHOUGHT_AUTH" not in os.environ:
+        print("Set 'export HYPERTHOUGHT_AUTH=[HyperThought auth token]' before testing.")
+        raise ValueError(
+            "Environment variable HYPERTHOUGHT_AUTH must be set to run tests."
+        )
+    return os.environ["HYPERTHOUGHT_AUTH"]
