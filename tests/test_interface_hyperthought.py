@@ -1,14 +1,14 @@
 import json
 import os
 import pytest
-from .common_fixtures import hyperthoughtAuth
-from pycarta.interface.hyperthought import get_auth
+from pycarta.interface.hyperthought import get_hyperthought_auth
 from pycarta.interface.hyperthought import get_children
 from pycarta.interface.hyperthought import get_templates
 from pycarta.interface.hyperthought import get_workspaces
 from pycarta.interface.hyperthought.base import Workspace
 from pycarta.interface.hyperthought.base import Template
 from pycarta.interface.hyperthought.base import HyperThoughtKeyFinder
+from pycarta.interface.hyperthought.schema import Schema, build
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def hyperthought_auth():
         raise ValueError(
             "Environment variable HYPERTHOUGHT_AUTH must be set to run tests."
         )
-    return get_auth(os.environ["HYPERTHOUGHT_AUTH"])
+    return get_hyperthought_auth(os.environ["HYPERTHOUGHT_AUTH"])
 
 
 class TestBase:
@@ -120,3 +120,83 @@ class TestAccessors:
         retrieved = get_workspaces(auth)
         b = [(key_finder(r) == key_finder(workspace)) for r in retrieved]
         assert any(b), f"Failed to find {workspace['name']}"
+
+
+class TestSchema:
+    def test_schema_small(self, hyperthought_auth, workspace, template, name):
+        schema = Schema([
+            {
+                "id": "Build",
+                "type": "WorkflowBuilder",
+                "contains": [
+                    {
+                        "type": "Measurement",
+                        "name": "Measurement"
+                    }
+                ]
+            },
+            {
+                "id": "SMeasure",
+                "type": "ProcessBuilder",
+                "contains": [
+                    {
+                        "key": "Sa",
+                        "units": "µm"
+                    }
+                ]
+            },
+            {
+                "id": "Measurement",
+                "type": "SMeasure",
+                "contains": [
+                    {
+                        "key": "Vmc",
+                        "value": 1.23,
+                        "units": "mL/m^2"
+                    }
+                ]
+            }
+        ])
+        if name is None:
+            raise IOError("Must call schema test with the --name=[workflow name] option.")
+        builder = schema["Build"](f"{name}-small")
+        wf = builder.build(
+            auth=hyperthought_auth,
+            workspace=workspace,
+            parent=f"{workspace}/{template}"
+        )
+
+    # def test_schema_large(self, hyperthought_auth, workspace, template, name):
+    #     schema = Schema("data/schema.json")
+    #     if name is None:
+    #         raise IOError("Must call schema test with the --name=[workflow name] option.")
+    #     builder = schema["Build"](f"{name}-large")
+    #     wf = builder.build(
+    #         auth=hyperthought_auth,
+    #         workspace=workspace,
+    #         parent=f"{workspace}/{template}"
+    #     )
+
+    def test_single_build(self, hyperthought_auth, workspace, template, name):
+        if name is None:
+            raise IOError("Must call schema test with the --name=[workflow name] option.")
+        build(
+            hyperthought_auth,
+            typename="Build",
+            name="UTEP04",
+            parent=template,
+            workspace=workspace,
+            schema="data/schema.json"
+        )
+
+    def test_multi_build(self, hyperthought_auth, workspace, template, name):
+        if name is None:
+            raise IOError("Must call schema test with the --name=[workflow name] option.")
+        build(
+            hyperthought_auth,
+            typename="GTADExPArtifact",
+            name=[f"GTADExP Artifact {i}" for i in range(2, 4)],
+            parent=template + "/UTEP04/Parts",
+            workspace=workspace,
+            schema="data/schema.json"
+        )

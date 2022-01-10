@@ -14,7 +14,7 @@ def cartaAuth():
 
 
 @pytest.fixture
-def  cartaUrl():
+def cartaUrl():
     return os.environ.get("CARTA_URL", "https://localhost:5001/api")
 
 
@@ -24,13 +24,3 @@ def agent(cartaAuth, cartaUrl):
         cartaAuth,
         url=cartaUrl
     )
-
-
-@pytest.fixture
-def hyperthoughtAuth():
-    if "HYPERTHOUGHT_AUTH" not in os.environ:
-        print("Set 'export HYPERTHOUGHT_AUTH=[HyperThought auth token]' before testing.")
-        raise ValueError(
-            "Environment variable HYPERTHOUGHT_AUTH must be set to run tests."
-        )
-    return os.environ["HYPERTHOUGHT_AUTH"]

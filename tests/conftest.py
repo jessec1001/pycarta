@@ -8,4 +8,25 @@
     - https://docs.pytest.org/en/stable/writing_plugins.html
 """
 
-# import pytest
+import pytest
+
+
+def pytest_addoption(parser):
+    parser.addoption("--workspace", action="store", default="Carta Development")
+    parser.addoption("--template", action="store", default="pytest")
+    parser.addoption("--name", action="store", default=None)
+
+
+@pytest.fixture
+def workspace(request):
+    return request.config.getoption("workspace")
+
+
+@pytest.fixture
+def template(request):
+    return request.config.getoption("template")
+
+
+@pytest.fixture
+def name(request):
+    return request.config.getoption("name")

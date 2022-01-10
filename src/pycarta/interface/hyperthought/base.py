@@ -81,7 +81,7 @@ class KeyFinder:
         self._finderFunctions = []
         self.register(KeyFinder.is_guid)
 
-    def register(self, func:Callable) -> Optional[str]:
+    def register(self, func: Callable) -> Optional[str]:
         """
         Registers a function to be used to find keys.
         This function should take one positional parameter,
@@ -227,7 +227,7 @@ class HyperThoughtKeyFinder(KeyFinder):
             Path from the workspace to the object of interest.
         """
         auth = self.auth
-        split = path.split(os.path.sep)
+        split = path.split("/")
         # get workspace
         workspaceApi = ht.api.workspaces.WorkspacesAPI(auth)
         spaceId = [

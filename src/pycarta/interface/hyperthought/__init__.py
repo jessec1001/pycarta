@@ -2,7 +2,17 @@ from .accessors import *
 from .base import *
 from .parsers import *
 from hyperthought.auth import Authorization
+from typing import Optional
 
 
-def get_auth(token: str) -> Authorization:
-    return Authorization(auth_payload=token)
+__hyperthoughtAgent = None
+
+
+def get_hyperthought_auth(token: Optional[str]=None) -> Authorization:
+    global __hyperthoughtAgent
+    if __hyperthoughtAgent is None:
+        if token is None:
+            raise ValueError("A HyperThought token must be given to initiate "
+                             "a HyperThought Authorization Agent.")
+        __hyperthoughtAgent = Authorization(auth_payload=token)
+    return __hyperthoughtAgent
