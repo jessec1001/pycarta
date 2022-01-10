@@ -8,6 +8,18 @@ from typing import Union, Optional, Any
 import logging
 
 
+__all__ = [
+    "get_sources",
+    "get_resources",
+    "get_data",
+    "get_roots",
+    "get_descendants",
+    "get_ids",
+    "post_graph",
+    "delete_resource"
+]
+
+
 @functionlogger
 def get_sources(agent: Agent, **kwds) -> JsonType:
     """
@@ -317,11 +329,11 @@ def post_graph(
             if response:
                 print("Graph was posted successfully.")
             else:
-                priint("Graph was not posted.")
+                print("Graph was not posted.")
     """
     logger = logging.getLogger()
     nodeSet = set(nodes)
-    for a,b in edges:
+    for a, b in edges:
         nodeSet.add(a)
         nodeSet.add(b)
     # Format the nodes and edges in vnd.vis+json format.
@@ -337,7 +349,7 @@ def post_graph(
                 "from": a.id,
                 "to": b.id
             }
-            for a,b in edges
+            for a, b in edges
         ]
     }
     response = agent.post(
@@ -348,12 +360,15 @@ def post_graph(
     if response:
         return response.json()
     else:
-        logging.debug(
+        logging.info(
             "%s API request failed with error status code %d.",
             __name__,
             response.status_code
         )
-        return None
+        # raise IOError(f"{__name__} API request failed with "
+        #               f"error status code {response.status_code}")
+        return response
+        # return None
 
 
 # ##### DELETE operations ##### #

@@ -3,11 +3,41 @@ import logging
 import types
 
 from functools import wraps
+from logging.handlers import SysLogHandler
+# from socket import SOCK_STREAM
+
+
+_log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+
+
+def get_file_handler():
+    # file_handler = logging.FileHandler("pycarta.log")
+    file_handler = SysLogHandler()
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(logging.Formatter(_log_format))
+    return file_handler
+
+
+def get_stream_handler():
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.WARNING)
+    stream_handler.setFormatter(logging.Formatter(_log_format))
+    return stream_handler
+
+
+def get_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    logger.addHandler(get_file_handler())
+    logger.addHandler(get_stream_handler())
+    return logger
 
 
 def functionlogger(fn):
     function_name = fn.__name__
-    logger = logging.getLogger(function_name)
+    logger = get_logger(function_name)
+    # logger = logging.getLogger(function_name)
+    # logger = logging.getLogger()
     @wraps(fn)
     def wrapper(*args, **kwds):
         state = "Success"
@@ -30,8 +60,9 @@ class MetaLogger(type):
     """
     def __new__(cls, name, base, dct):
         _type = super().__new__(cls, name, base, dct)
-        _type.logger = logging.getLogger(name)
-        _type.logger.setLevel(logging.DEBUG)
+        # _type.logger = logging.getLogger(name)
+        # _type.logger.setLevel(logging.DEBUG)
+        _type.logger = get_logger(name)
         MetaLogger.update_class_methods(_type)
         return _type
 

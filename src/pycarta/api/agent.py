@@ -7,6 +7,8 @@ from typing import Optional, Any
 from ..base.logger import MetaLogger
 
 
+__all__ = ["create_agent"]
+
 
 class Agent(metaclass=MetaLogger):
     """
@@ -42,6 +44,9 @@ class Agent(metaclass=MetaLogger):
         return self._url
     @url.setter
     def url(self, url: str):
+        if not url.strip("/").endswith("api"):
+            self.logger.info("URL does not end in 'api', adding 'api'")
+            url = url.strip("/") + "/api"
         self._url = url
 
     def endpoint(self, *path):
