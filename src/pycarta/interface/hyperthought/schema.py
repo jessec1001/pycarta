@@ -4,10 +4,14 @@ import re
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
+from copy import deepcopy
 from io import IOBase
 from pprint import pformat
 from typing import Optional, Union, Any, List, Dict
 from .base import HyperThoughtKeyFinder
+
+
+__all__ = ["build"]
 
 
 JSONType = Union[str, int, float, bool, None, Dict[str, Any], List[Any]]
@@ -359,6 +363,8 @@ class Schema(Mapping):
             schema = json.load(schema)
         if not isinstance(schema, list):
             raise ValueError("The schema must be a list of types.")
+        else:
+            schema = deepcopy(schema)
         # counter to check for a missing definition
         maxlength = len(schema)
         missing = set()
