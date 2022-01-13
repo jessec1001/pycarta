@@ -50,7 +50,8 @@ class Agent(metaclass=MetaLogger):
         self._url = url
 
     def endpoint(self, *path):
-        return os.path.join(self.url, *path)
+        return self.url.strip("/") + "/" + "/".join([p.strip("/") for p in path])
+        # return os.path.join(self.url, *path)
 
     def _set_auth(self, kwds: dict[str, Any]):
         kwds["cookies"] = {
