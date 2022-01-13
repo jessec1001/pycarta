@@ -2,9 +2,12 @@ import os
 import requests
 import warnings
 
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 
 from ..base.logger import MetaLogger
+
+
+__all__ = ["create_agent"]
 
 
 class Agent(metaclass=MetaLogger):
@@ -41,12 +44,15 @@ class Agent(metaclass=MetaLogger):
         return self._url
     @url.setter
     def url(self, url: str):
+        if not url.strip("/").endswith("api"):
+            self.logger.info("URL does not end in 'api', adding 'api'")
+            url = url.strip("/") + "/api"
         self._url = url
 
     def endpoint(self, *path):
         return os.path.join(self.url, *path)
 
-    def _set_auth(self, kwds: Dict[str, Any]):
+    def _set_auth(self, kwds: dict[str, Any]):
         kwds["cookies"] = {
             **{"CartaAuth": self.__auth},
             **kwds.get("cookies", dict())

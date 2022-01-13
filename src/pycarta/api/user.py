@@ -1,9 +1,15 @@
 from .agent import Agent
 from ..base.logger import functionlogger
 from ..base.typing import JsonType
-from numbers import Number
+# from numbers import Number
 
 import logging
+
+
+__all__ = [
+    "get_user",
+    "get_users"
+]
 
 
 @functionlogger

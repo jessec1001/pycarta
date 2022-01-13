@@ -3,7 +3,7 @@ from ..base.logger import functionlogger
 from ..base.typing import JsonType
 from ..graph.node import Node
 from numbers import Number
-from typing import Union, Optional, Any, List, Tuple
+from typing import Union, Optional, Any
 
 import logging
 
@@ -172,9 +172,9 @@ def get_descendants(
     source: str,
     resource: str,
     *,
-    ids: Union[str, List[str]],
+    ids: Union[str, list[str]],
     includeRoots: bool=False,
-    depth: Optional[Union[str, int]]=1,
+    depth: Optional[int]=1,
     traversal: str="preorder",
     **kwds
 ):
@@ -234,7 +234,7 @@ def get_ids(
     source: str,
     resource: str,
     *,
-    ids: Union[str, List[str]],
+    ids: Union[str, list[str]],
     **kwds
 ):
     """
@@ -279,8 +279,8 @@ def post_graph(
     source: str,
     *,
     label: str,
-    nodes: List[Node]=[],
-    edges: List[Tuple[Node, Node]]=[],
+    nodes: list[Node]=[],
+    edges: list[tuple[Node, Node]]=[],
     directed: bool=True,
     **kwds
 ):
@@ -333,7 +333,7 @@ def post_graph(
     """
     logger = logging.getLogger()
     nodeSet = set(nodes)
-    for a,b in edges:
+    for a, b in edges:
         nodeSet.add(a)
         nodeSet.add(b)
     # Format the nodes and edges in vnd.vis+json format.
@@ -349,7 +349,7 @@ def post_graph(
                 "from": a.id,
                 "to": b.id
             }
-            for a,b in edges
+            for a, b in edges
         ]
     }
     response = agent.post(
@@ -360,12 +360,15 @@ def post_graph(
     if response:
         return response.json()
     else:
-        logging.debug(
+        logging.info(
             "%s API request failed with error status code %d.",
             __name__,
             response.status_code
         )
+        # raise IOError(f"{__name__} API request failed with "
+        #               f"error status code {response.status_code}")
         return response
+        # return None
 
 
 # ##### DELETE operations ##### #
