@@ -2,6 +2,7 @@ from .accessors import *
 from .base import *
 from .parsers import *
 from .schema import *
+from .setters import *
 from hyperthought.auth import Authorization
 from typing import Optional
 

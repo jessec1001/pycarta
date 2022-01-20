@@ -1,4 +1,6 @@
+import hyperthought as ht
 import json
+import numpy as np
 import os
 import pytest
 from pycarta.interface.hyperthought import get_hyperthought_auth
@@ -9,6 +11,7 @@ from pycarta.interface.hyperthought.base import Workspace
 from pycarta.interface.hyperthought.base import Template
 from pycarta.interface.hyperthought.base import HyperThoughtKeyFinder
 from pycarta.interface.hyperthought.schema import Schema, build
+from pycarta.interface.hyperthought import update_process
 
 
 @pytest.fixture
@@ -40,6 +43,11 @@ def hyperthought_auth():
             "Environment variable HYPERTHOUGHT_AUTH must be set to run tests."
         )
     return get_hyperthought_auth(os.environ["HYPERTHOUGHT_AUTH"])
+
+
+@pytest.fixture
+def rng():
+    return np.random.default_rng()
 
 
 class TestBase:
@@ -176,27 +184,117 @@ class TestSchema:
     #         workspace=workspace,
     #         parent=f"{workspace}/{template}"
     #     )
+    #
+    # def test_single_build(self, hyperthought_auth, workspace, template, name):
+    #     if name is None:
+    #         raise IOError("Must call schema test with the --name=[workflow name] option.")
+    #     build(
+    #         hyperthought_auth,
+    #         typename="Build",
+    #         name="UTEP04",
+    #         parent=template,
+    #         workspace=workspace,
+    #         schema="data/schema.json"
+    #     )
+    #
+    # def test_multi_build(self, hyperthought_auth, workspace, template, name):
+    #     if name is None:
+    #         raise IOError("Must call schema test with the --name=[workflow name] option.")
+    #     build(
+    #         hyperthought_auth,
+    #         typename="GTADExPArtifact",
+    #         name=[f"GTADExP Artifact {i}" for i in range(2, 4)],
+    #         parent=template + "/UTEP04/Parts",
+    #         workspace=workspace,
+    #         schema="data/schema.json"
+    #     )
 
-    def test_single_build(self, hyperthought_auth, workspace, template, name):
-        if name is None:
-            raise IOError("Must call schema test with the --name=[workflow name] option.")
-        build(
-            hyperthought_auth,
-            typename="Build",
-            name="UTEP04",
-            parent=template,
-            workspace=workspace,
-            schema="data/schema.json"
-        )
 
-    def test_multi_build(self, hyperthought_auth, workspace, template, name):
-        if name is None:
-            raise IOError("Must call schema test with the --name=[workflow name] option.")
-        build(
-            hyperthought_auth,
-            typename="GTADExPArtifact",
-            name=[f"GTADExP Artifact {i}" for i in range(2, 4)],
-            parent=template + "/UTEP04/Parts",
-            workspace=workspace,
-            schema="data/schema.json"
+class TestSetters:
+    @staticmethod
+    def document_to_key_value(doc):
+        return {
+            m["keyName"]: m["value"]["link"] for m in doc["metadata"]
+        }
+
+    @staticmethod
+    def document_to_key_unit(doc):
+        return {
+            m["keyName"]: m["unit"] for m in doc["metadata"]
+        }
+
+    @staticmethod
+    def document_to_key_annotation(doc):
+        return {
+            m["keyName"]: m["annotation"] for m in doc["metadata"]
+        }
+
+    @staticmethod
+    def random_letter(rng, size=1):
+        return [
+            chr(i) for i in
+            rng.integers(ord('a'), ord('z')+1, size=size)
+        ]
+
+    def test_update_process(self, hyperthought_auth, rng):
+        auth = hyperthought_auth
+        rng = np.random.default_rng()
+        processNode = "Carta Development/pytest/Process Node Update/Process Node"
+        processNodeId = HyperThoughtKeyFinder(auth)(processNode)
+        # test existing metadata entry
+        values = {
+            "Numeric": 100*(2*rng.random() - 1)
+        }
+        units = {
+            "Numeric": "".join(TestSetters.random_letter(rng, size=2))
+        }
+        annotations = {
+            "Numeric": " ".join([
+                "".join(TestSetters.random_letter(rng, size=rng.integers(2, 6)))
+                for _ in range(5)
+            ])
+        }
+        update_process(
+            auth,
+            processNode,
+            values=values,
+            units=units,
+            annotations=annotations
         )
+        doc = ht.api.workflow.WorkflowAPI(auth).get_document(processNodeId)
+        assert np.isclose(
+            TestSetters.document_to_key_value(doc)["Numeric"],
+            values["Numeric"]
+        )
+        assert TestSetters.document_to_key_unit(doc)["Numeric"] == units["Numeric"]
+        assert TestSetters.document_to_key_annotation(doc)["Numeric"] == annotations["Numeric"]
+        # test new metadata entry
+        values = {
+            "foo": 100 * (2 * rng.random() - 1)
+        }
+        units = {
+            "foo": "".join(TestSetters.random_letter(rng, size=2))
+        }
+        annotations = {
+            "foo": " ".join([
+                "".join(TestSetters.random_letter(rng, size=rng.integers(2, 6)))
+                for _ in range(5)
+            ])
+        }
+        update_process(
+            auth,
+            processNode,
+            values=values,
+            units=units,
+            annotations=annotations,
+            add=True
+        )
+        tmp = ht.api.workflow.WorkflowAPI(auth).get_document(processNodeId)
+        assert np.isclose(
+            TestSetters.document_to_key_value(tmp)["foo"],
+            values["foo"]
+        )
+        assert TestSetters.document_to_key_unit(tmp)["foo"] == units["foo"]
+        assert TestSetters.document_to_key_annotation(tmp)["foo"] == annotations["foo"]
+        # return the process
+        ht.api.workflow.WorkflowAPI(auth).update_document(doc)
