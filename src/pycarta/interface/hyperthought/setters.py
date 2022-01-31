@@ -1,6 +1,8 @@
+import warnings
+
 import hyperthought as ht
 from .base import HyperThoughtKeyFinder
-from typing import Dict, Union, Any
+from typing import Dict, Union, Any, Optional
 from warnings import warn
 
 
@@ -23,76 +25,91 @@ class _HyperthoughtUpdateAgent:
         self.retrieve_metadata()
 
     def retrieve_metadata(self):
-        metadata = self.document.get("metadata")
-        if metadata:
-            self.metadata = [
-                ht.api.workflow.MetadataItem(
-                    key=m["keyName"],
-                    value=m["value"]["link"],
-                    units=m["unit"],
-                    annotation=m["annotation"],
-                    type_=m["value"]["type"] or None
-                ) for m in metadata
-            ]
+        metadata = self.document.get("metadata", [])
+        self.metadata = [
+            ht.api.workflow.MetadataItem(
+                key=m["keyName"],
+                value=m["value"]["link"],
+                units=m["unit"],
+                annotation=m["annotation"],
+                type_=m["value"]["type"] or None
+            ) for m in metadata
+        ]
 
     def update_values(self, add: bool = False, **kwargs) -> None:
         # update metadata fields
         metadata = self.metadata
+        # metadata is stored as a list, but we want to access it as a map.
         keyIndexMap = {m.key: i for i, m in enumerate(metadata)}
         for key, value in kwargs.items():
-            if key in keyIndexMap:
-                # update existing metadata values
-                metadata[keyIndexMap[key]].value = value
-            elif add:
-                # add new entry (if requested by the user)
-                metadata.append(
-                    ht.api.workflow.MetadataItem(
-                        key=key,
-                        value=value
+            with warnings.catch_warnings():
+                warnings.simplefilter("always")
+                if key in keyIndexMap:
+                    # update existing metadata values
+                    m = metadata[keyIndexMap[key]]
+                    metadata[keyIndexMap[key]] = ht.api.workflow.MetadataItem(
+                        key=m.key,
+                        value=value,
+                        units=m.units,
+                        annotation=m.annotation,
+                        type_=None
                     )
-                )
-            else:
-                warn(f"{key} not found. No value set.")
+                elif add:
+                    # add new entry (if requested by the user)
+                    metadata.append(
+                        ht.api.workflow.MetadataItem(
+                            key=key,
+                            value=None
+                        )
+                    )
+                else:
+                    warn(f"{key} not found. No value set.")
 
     def update_units(self, add: bool = False, **kwargs) -> None:
         # update metadata fields
         metadata = self.metadata
+        # metadata is stored as a list, but we want to access it as a map.
         keyIndexMap = {m.key: i for i, m in enumerate(metadata)}
         for key, value in kwargs.items():
-            if key in keyIndexMap:
-                # update existing metadata values
-                metadata[keyIndexMap[key]].units = value
-            elif add:
-                # add new entry (if requested by the user)
-                metadata.append(
-                    ht.api.workflow.MetadataItem(
-                        key=key,
-                        value=None,
-                        units=value
+            with warnings.catch_warnings():
+                warnings.simplefilter("always")
+                if key in keyIndexMap:
+                    # update existing metadata values
+                    metadata[keyIndexMap[key]].units = value
+                elif add:
+                    # add new entry (if requested by the user)
+                    metadata.append(
+                        ht.api.workflow.MetadataItem(
+                            key=key,
+                            value=None,
+                            units=value
+                        )
                     )
-                )
-            else:
-                warn(f"{key} not found. No unit set.")
+                else:
+                    warn(f"{key} not found. No unit set.")
 
     def update_annotation(self, add: bool = False, **kwargs) -> None:
         # update metadata fields
         metadata = self.metadata
+        # metadata is stored as a list, but we want to access it as a map.
         keyIndexMap = {m.key: i for i, m in enumerate(metadata)}
         for key, value in kwargs.items():
-            if key in keyIndexMap:
-                # update existing metadata values
-                metadata[keyIndexMap[key]].annotation = value
-            elif add:
-                # add new entry (if requested by the user)
-                metadata.append(
-                    ht.api.workflow.MetadataItem(
-                        key=key,
-                        value=None,
-                        annotation=value
+            with warnings.catch_warnings():
+                warnings.simplefilter("always")
+                if key in keyIndexMap:
+                    # update existing metadata values
+                    metadata[keyIndexMap[key]].annotation = value
+                elif add:
+                    # add new entry (if requested by the user)
+                    metadata.append(
+                        ht.api.workflow.MetadataItem(
+                            key=key,
+                            value=None,
+                            annotation=value
+                        )
                     )
-                )
-            else:
-                warn(f"{key} not found. No annotation set.")
+                else:
+                    warn(f"{key} not found. No annotation set.")
 
     def update(self):
         if self.metadata:
@@ -103,9 +120,10 @@ class _HyperthoughtUpdateAgent:
 def update_process(
         auth: ht.auth.Authorization,
         node: Union[str, ht.api.workflow.Process],
-        values: Dict[str, Any] = dict(),
-        units: Dict[str, str] = dict(),
-        annotations: Dict[str, str] = dict(),
+        *,
+        values: Optional[Dict[str, Any]] = None,
+        units: Optional[Dict[str, str]] = None,
+        annotations: Optional[Dict[str, str]] = None,
         add: bool = False
 ):
     """
