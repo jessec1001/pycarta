@@ -1,14 +1,9 @@
-=======
-pycarta
-=======
-
+# pycarta
 
 PyCarta provides a pythonic interface to the Carta data virtualization and
 analysis environment.
 
-
-Description
-===========
+## Description
 
 Carta provides a data virtualization environment that allows many, possibly
 disparate, data resources to be connected to a uniform data processing and
